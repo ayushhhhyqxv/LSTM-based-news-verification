@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="chat.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Lexend+Deca:wght@100..900&family=Salsa&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+    body {
+      font-family: "Host Grotesk", sans-serif;
+      font-weight: 500;
+      letter-spacing: -0.6px;
+      margin: 0;
+      min-height: 100vh;
+      padding: 30px;
+      color: white;
+
+      /* Animated Gradient Background */
+      background: linear-gradient(
+        45deg,
+        #0a0a2a,
+        #000000,
+        #2a0a4a,
+        #000000,
+        #0a0a2a,
+        #000000,
+        #2a0a4a
+      );
+      background-size: 400% 400%;
+      animation: gradientWave 8s ease infinite;
+    }
+
+    /* Keyframes for flowing gradient */
+    @keyframes gradientWave {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    #chat-container {
+      box-shadow: -6px 0px darkorange;
+      border: 1px solid white;
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      height: 85vh;
+      display: flex;
+      margin-top: 40px;
+      flex-direction: column;
+      border-radius: 45px;
+    }
+
+    .whole {
+        border-bottom: 6px 6px orange;
+    }
+
+    header {
+      background-color: #0808ff;
+      color: white;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: 500;
+      letter-spacing: -1px;
+      padding: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top-left-radius: 45px;
+      border-top-right-radius: 45px;
+      border-bottom: 2px solid white;
+    }
+
+    header h1 {
+      margin-left: 40px;
+      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+
+    #logout-btn {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      margin-right: 20px;
+      background-color: #0dcf41;
+      border-radius: 12px;
+      box-shadow: 2px 2px black;
+    }
+
+    #logout-btn:hover {
+      background-color: #c82333;
+    }
+
+    #chat-box {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      background-color: lightgray;
+    }
+
+    .message {
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      max-width: 70%;
+    }
+
+    .message.sent {
+      background-color: #000000;
+      color: white;
+      margin-left: auto;
+      box-shadow: -4px 4px rgb(255, 121, 37);
+    }
+
+    .message.received {
+      background-color: #ffffff;
+      margin-right: auto;
+      border: 1px solid #ddd;
+    }
+
+    .message-content {
+      margin-bottom: 0.5rem;
+    }
+
+    .message-info {
+      font-size: 0.8rem;
+      color:rgb(204, 255, 0);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #message-form {
+      display: flex;
+      padding: 1rem;
+      background-color: rgb(0, 149, 15);
+      border-top: 2px solid #000000;
+      border-bottom-left-radius: 45px;
+      border-bottom-right-radius: 45px;
+    }
+
+    #message-input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #000000;
+      box-sizing: 3px 3px black;
+      border-radius: 15px;
+      font-family: monospace;
+      letter-spacing: -1px;
+      background-color: azure;
+      font-size: 1rem;
+    }
+
+    #message-form button {
+      padding: 0.5rem 1rem;
+      margin-left: 1rem;
+      background-color: #1c03fb;
+      color: white;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 3px 4px rgb(0, 0, 0);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #message-form button:hover {
+      background-color: #0056b3;
+    }
+
+    .probability-box {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      display: inline-block;
+    }
+
+    .red {
+      background-color: #ffdddd;
+      color: #dc3545;
+    }
+
+    .yellow {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .faint-green {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .bright-green {
+      background-color: #d1ecf1;
+      color: #0c5460;
+    }
+  </style>
+
+  <body>
+    <div class="whole">
+      <div id="chat-container">
+        <header>
+          <h1>Welcome, {{ username }}!</h1>
+          <a href="/logout" id="logout-btn">Logout</a>
+        </header>
+
+        <div id="chat-box">
+          {% for message in messages %}
+          <div
+            class="message {% if message['user_id'] == user_id %}sent{% else %}received{% endif %}"
+          >
+            <div class="message-content">
+              <p>{{ message['content'] }}</p>
+              <div
+                class="probability-box {% if message['truth_probability'] <= 0.3 %}red {% elif message['truth_probability'] <= 0.6 %}yellow {% elif message['truth_probability'] <= 0.9 %}faint-green {% else %}bright-green {% endif %}"
+              >
+                Truth Probability: {{ (message['truth_probability'] * 100) |
+                round(2) }}%
+              </div>
+            </div>
+            <div class="message-info">
+              <span class="sender">{{ message['username'] }}</span>
+              <span class="timestamp">{{ message['timestamp'] }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <form id="message-form">
+          <input
+            type="text"
+            id="message-input"
+            placeholder="Check your message here"
+            required
+          />
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const messageForm = document.getElementById("message-form");
+      const messageInput = document.getElementById("message-input");
+      const chatBox = document.getElementById("chat-box");
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      messageForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const content = messageInput.value;
+
+        // Get current IST time
+        const now = new Date();
+        const istTime = new Date(now.getTime() + 5.5 * 60 * 60 * 1000); // IST is UTC +5:30
+        const options = {
+          timeZone: 'Asia/Kolkata',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        };
+        const formattedTime = istTime.toLocaleString('en-US', options);
+
+        fetch("/send_message", {
+          method: "POST",
+          body: new URLSearchParams({
+            content: content,
+            timestamp: formattedTime // Send IST timestamp to server
+          }),
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }).then(() => {
+          messageInput.value = "";
+          chatBox.scrollTop = chatBox.scrollHeight;
+          location.reload();
+        });
+      });
+    </script>
+  </body>
+</html>
