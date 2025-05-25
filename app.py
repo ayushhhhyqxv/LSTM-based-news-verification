@@ -11,7 +11,7 @@ from keras_preprocessing.sequence import pad_sequences
 import pickle
 import os
 
-# Suppress oneDNN warning
+
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 app = Flask(__name__)
@@ -154,5 +154,5 @@ def logout():
 
 if __name__ == '__main__':
     if model is None or tokenizer is None:
-        print("⚠️ WARNING: Model or tokenizer failed to load! Using default predictions.")
+        print(" WARNING: Model or tokenizer failed to load! Using default predictions.")
     app.run(debug=True, host='0.0.0.0', port=5000)
